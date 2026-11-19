@@ -1,0 +1,19 @@
+{
+    "name": "bungee-action/eventmodule-site",
+    "description": "Contact form backend for bungee-action-eventmodule.de (PHPMailer + ALTCHA)",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.1",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "phpmailer/phpmailer": "^7.2",
+        "altcha-org/altcha": "^2.4"
+    },
+    "config": {
+        "vendor-dir": "server/vendor",
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

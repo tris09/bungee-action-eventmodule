@@ -7,6 +7,9 @@ const WHATSAPP_NUMBER = '491704904460';
 const root = document.documentElement;
 
 let currentLang = 'de';
+// German lives in the HTML, the others in js/i18n.js
+const SUPPORTED_LANGS = ['de', 'en', 'fr', 'nl'];
+
 const msg = (key) => (window.I18N_MESSAGES?.[currentLang] || window.I18N_MESSAGES?.de || {})[key] || '';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -39,8 +42,10 @@ function initLanguage() {
     });
   });
 
+  const select = document.getElementById('lang-select');
+
   const apply = (lang) => {
-    currentLang = lang === 'en' ? 'en' : 'de';
+    currentLang = SUPPORTED_LANGS.includes(lang) ? lang : 'de';
     const dict = window.I18N?.[currentLang] || {};
 
     textEls.forEach((el) => {
@@ -55,24 +60,23 @@ function initLanguage() {
     });
 
     root.lang = currentLang;
-    document.querySelectorAll('.lang-switch [data-lang]').forEach((btn) => {
-      btn.setAttribute('aria-pressed', String(btn.dataset.lang === currentLang));
-    });
+    if (select) select.value = currentLang;
     updateWhatsAppLinks(); // links inside translated texts were just re-created
     updateThemeLabel();
+    document.dispatchEvent(new CustomEvent('langchange', { detail: { lang: currentLang } }));
   };
 
-  document.querySelectorAll('.lang-switch [data-lang]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      store.set('lang', btn.dataset.lang);
-      apply(btn.dataset.lang);
-    });
+  select?.addEventListener('change', () => {
+    store.set('lang', select.value);
+    apply(select.value);
   });
 
-  // Saved choice > browser language > German
+  // Saved choice > first supported browser language > German
   const saved = store.get('lang');
-  const browserLang = (navigator.language || 'de').toLowerCase().startsWith('de') ? 'de' : 'en';
-  apply(saved || browserLang);
+  const browserLangs = (navigator.languages?.length ? navigator.languages : [navigator.language || 'de'])
+    .map((l) => l.toLowerCase().slice(0, 2));
+  const browserLang = browserLangs.find((l) => SUPPORTED_LANGS.includes(l)) || 'de';
+  apply(SUPPORTED_LANGS.includes(saved) ? saved : browserLang);
 }
 
 function parseAttrList(value = '') {
@@ -184,19 +188,60 @@ function initMobileCta() {
   new IntersectionObserver(([e]) => { visible.contact = e.isIntersecting; update(); }, { threshold: 0.05 }).observe(contact);
 }
 
-/* ---------- Contact form: validation + async submit ---------- */
+/* ---------- Contact form: validation, spam protection, async submit ---------- */
+
+// Server error codes (kontakt.php) -> message keys in I18N_MESSAGES
+const FORM_ERRORS = {
+  captcha: 'formCaptcha',
+  captcha_expired: 'formCaptchaExpired',
+  too_fast: 'formTooFast',
+  rate: 'formRate',
+  spam: 'formSpam',
+  validation: 'formRequired',
+};
+
 function initContactForm() {
   const form = document.getElementById('contact-form');
   if (!form) return;
 
   const status = form.querySelector('.form-status');
   const submitBtn = form.querySelector('button[type="submit"]');
+  const widget = form.querySelector('altcha-widget');
+  let altchaPayload = '';
+  let proofStartedAt = 0;
 
-  const setStatus = (text, type = '') => {
-    status.textContent = text;
+  // Status messages are stored by key, so they follow a later language switch
+  let lastStatus = null;
+  const setStatus = (key, type = '') => {
+    lastStatus = key ? { key, type } : null;
+    status.textContent = key ? msg(key) : '';
     status.className = 'form-status' + (type ? ` is-${type}` : '');
   };
+  document.addEventListener('langchange', () => { if (lastStatus) setStatus(lastStatus.key, lastStatus.type); });
 
+  /* Load the ALTCHA widget only when the form comes close: keeps the first page load light */
+  const loadAltcha = () => import('./vendor/altcha.min.js').then(() => customElements.whenDefined('altcha-widget'));
+  let altchaReady = null;
+  const ensureAltcha = () => (altchaReady ??= loadAltcha().then(() => {
+    widget.configure?.({ language: currentLang });
+  }).catch(() => null));
+
+  if (widget) {
+    new IntersectionObserver((entries, obs) => {
+      if (entries[0].isIntersecting) { ensureAltcha(); obs.disconnect(); }
+    }, { rootMargin: '600px 0px' }).observe(form);
+
+    // The widget reports every state change; keep the latest proof
+    widget.addEventListener('statechange', (e) => {
+      const state = e.detail?.state;
+      if (state === 'verifying') proofStartedAt = Date.now(); // ≈ moment the challenge was issued
+      altchaPayload = state === 'verified' ? (e.detail.payload || '') : '';
+    });
+    document.addEventListener('langchange', (e) => widget.configure?.({ language: e.detail.lang }));
+  }
+
+  // Our own required fields (the ALTCHA widget brings its own checkbox, handled separately)
+  const requiredFields = () => [...form.querySelectorAll('[required]')].filter((f) => !f.closest('altcha-widget'));
   const isValid = (field) => (field.type === 'checkbox' ? field.checked : field.checkValidity());
   const markField = (field, valid) => {
     const target = field.type === 'checkbox' ? field.closest('.consent') : field;
@@ -204,38 +249,84 @@ function initContactForm() {
     field.setAttribute('aria-invalid', String(!valid));
   };
 
+  /** Make sure the proof-of-work is done; solves it now if the visitor was faster. */
+  const getProof = async () => {
+    if (!widget) return '';
+    await ensureAltcha();
+    let payload = altchaPayload;
+    if (!payload && typeof widget.verify === 'function') {
+      setStatus('formVerifying');
+      proofStartedAt = Date.now();
+      const result = await widget.verify().catch(() => null);
+      payload = result?.payload || altchaPayload;
+    }
+    if (payload) await waitForMinFillTime(payload);
+    return payload;
+  };
+
+  /**
+   * The server rejects forms sent faster than the minimum fill time after the
+   * challenge was issued (typical bot behaviour). If a fresh proof was just
+   * solved, wait out the rest of that time instead of failing.
+   */
+  const waitForMinFillTime = async (payload) => {
+    let minFill = 0;
+    try { minFill = JSON.parse(atob(payload)).challenge.parameters.data.mf || 0; } catch { /* ignore */ }
+    const waitMs = proofStartedAt + minFill * 1000 + 500 - Date.now();
+    if (waitMs > 0) {
+      setStatus('formVerifying');
+      await new Promise((resolve) => setTimeout(resolve, Math.min(waitMs, 10000)));
+    }
+  };
+
+  /** Every challenge works only once: start fresh for the next attempt. */
+  const resetProof = (solveNext) => {
+    altchaPayload = '';
+    widget?.reset?.();
+    if (solveNext) widget?.verify?.().catch(() => {});
+  };
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     let firstInvalid = null;
-    form.querySelectorAll('[required]').forEach((field) => {
+    requiredFields().forEach((field) => {
       const valid = isValid(field);
       markField(field, valid);
       if (!valid && !firstInvalid) firstInvalid = field;
     });
 
     if (firstInvalid) {
-      setStatus(firstInvalid.name === 'consent' ? msg('formConsent') : msg('formRequired'), 'error');
+      setStatus(firstInvalid.name === 'consent' ? 'formConsent' : 'formRequired', 'error');
       firstInvalid.focus();
       return;
     }
 
     submitBtn.disabled = true;
-    setStatus(msg('formSending'));
 
     try {
+      const proof = await getProof();
+      if (!proof) throw new Error('captcha');
+
+      setStatus('formSending');
+      const body = new FormData(form);
+      body.set('altcha', proof);
+      body.set('lang', currentLang);
+
       const res = await fetch(form.action, {
         method: 'POST',
-        body: new FormData(form),
+        body,
         headers: { Accept: 'application/json' },
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.ok) throw new Error(data.error || 'send failed');
+      if (!res.ok || !data.ok) throw new Error(data.error || 'send');
 
       form.reset();
-      setStatus(msg('formSuccess'), 'success');
-    } catch {
-      setStatus(msg('formError'), 'error');
+      setStatus('formSuccess', 'success');
+      resetProof(false);
+    } catch (err) {
+      setStatus(FORM_ERRORS[err.message] || 'formError', 'error');
+      resetProof(true); // the visitor will probably try again: solve the next proof right away
     } finally {
       submitBtn.disabled = false;
     }
@@ -244,7 +335,7 @@ function initContactForm() {
   // Remove the error state as soon as a field becomes valid
   form.addEventListener('input', (e) => {
     const field = e.target;
-    if (field.hasAttribute('required') && isValid(field)) markField(field, true);
+    if (field.hasAttribute('required') && !field.closest('altcha-widget') && isValid(field)) markField(field, true);
   });
 }
 

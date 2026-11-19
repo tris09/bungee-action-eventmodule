@@ -1,14 +1,18 @@
+# Dependencies (re-created by "npm install" / "composer install")
 node_modules/
-# Dependencies
-node_modules/
+server/vendor/
 
-# OS junk
+# Secrets – never commit
+server/config.php
+.env
+.env.*
+
+# Runtime data of the contact form (rate limits, logs)
+server/storage/*
+!server/storage/.gitignore
+
+# OS / editor / logs
+.DS_Store
 Thumbs.db
 desktop.ini
-.DS_Store
-
-# Logs
-npm-debug.log*
-
-# Local secrets (for later, e.g. SMTP credentials)
-.env
+*.log

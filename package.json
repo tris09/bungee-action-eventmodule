@@ -1,14 +1,17 @@
 {
   "name": "bungee-action-eventmodule",
   "private": true,
-  "description": "Static one-pager for bungee-action-eventmodule.de",
+  "description": "One-pager for bungee-action-eventmodule.de (static HTML/CSS/JS + small PHP form backend)",
   "type": "module",
   "scripts": {
     "images": "node tools/build-images.mjs",
     "images:force": "node tools/build-images.mjs --force",
-    "images:clean": "node tools/build-images.mjs --clean"
+    "images:clean": "node tools/build-images.mjs --clean",
+    "vendor": "node tools/copy-vendor.mjs",
+    "postinstall": "node tools/copy-vendor.mjs"
   },
   "devDependencies": {
+    "altcha": "^3.6.0",
     "sharp": "^0.35.5"
   },
   "engines": {

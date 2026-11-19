@@ -1,102 +1,132 @@
 <?php
 /**
- * Minimal contact form handler for bungee-action-eventmodule.de
+ * POST: receives the contact form and mails it via SMTP (PHPMailer).
  *
- * Why PHP: a static page (HTML/CSS/JS) cannot send e-mails by itself.
- * Almost every shared hosting package (IONOS, Strato, all-inkl, ...) runs PHP
- * and provides mail(), so this single file is all the "backend" we need.
+ * Protection layers, cheapest first:
+ *  1. Only POST from our own page (Origin check)
+ *  2. Honeypot field: bots fill it, people never see it
+ *  3. Rate limit per visitor (hashed IP, nothing personal stored)
+ *  4. ALTCHA proof-of-work: valid, not expired, used only once
+ *  5. Minimum fill time (signed into the challenge)
+ *  6. Strict validation + simple content checks (links, length)
  *
- * Returns JSON for the JS fetch() request, or redirects back to the page
- * when JavaScript is disabled.
+ * Answers with JSON: {ok: true} or {ok: false, error: "<code>"}.
  */
 
-// ---------- Configuration ----------
-const MAIL_TO      = 'info@bungee-action.de';
-// Must be an address on YOUR domain, otherwise many providers reject/flag the mail
-const MAIL_FROM    = 'website@bungee-action-eventmodule.de';
-const MAIL_SUBJECT = 'Neue Anfrage über bungee-action-eventmodule.de';
+declare(strict_types=1);
 
-// ---------- Helpers ----------
-$wantsJson = str_contains($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json');
+use AltchaOrg\Altcha\VerifySolutionOptions;
 
-function respond(bool $ok, string $error = ''): void
-{
-    global $wantsJson;
-    if ($wantsJson) {
-        header('Content-Type: application/json; charset=utf-8');
-        http_response_code($ok ? 200 : 400);
-        echo json_encode(['ok' => $ok, 'error' => $error]);
-    } else {
-        header('Location: index.html' . ($ok ? '?sent=1' : '?sent=0') . '#kontakt');
-    }
-    exit;
+require __DIR__ . '/../server/src/bootstrap.php';
+
+Http::requireMethod('POST');
+
+if (!Http::isSameOrigin($config['allowed_origins'])) {
+    Http::json(['ok' => false, 'error' => 'origin'], 403);
 }
 
-/** Trim, strip tags and remove line breaks (prevents header injection). */
-function clean_line(string $key): string
-{
-    $value = trim(strip_tags($_POST[$key] ?? ''));
-    return str_replace(["\r", "\n", '%0a', '%0d'], ' ', $value);
+if ((int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 32 * 1024) {
+    Http::json(['ok' => false, 'error' => 'too_long'], 413);
 }
 
-// ---------- Guards ----------
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    respond(false, 'method');
+$p = $config['protection'];
+
+// ---------- 2. Honeypot: pretend success, silently drop ----------
+if (trim((string) ($_POST['website'] ?? '')) !== '') {
+    Http::json(['ok' => true]);
 }
 
-// Honeypot filled -> pretend success, silently drop (bot)
-if (!empty($_POST['website'])) {
-    respond(true);
+// ---------- 3. Rate limit ----------
+$limiter = new RateLimiter(STORAGE_DIR . '/ratelimit');
+[$max, $window] = $p['limit_submits'];
+if (!$limiter->hit('submit', Http::clientKey($config['secrets']['ip_hash']), $max, $window)) {
+    header('Retry-After: ' . $window);
+    Http::json(['ok' => false, 'error' => 'rate'], 429);
 }
 
-// ---------- Read & validate input ----------
-$name    = clean_line('name');
-$org     = clean_line('organisation');
-$email   = clean_line('email');
-$phone   = clean_line('phone');
-$event   = clean_line('event');
-$date    = clean_line('date');
-$place   = clean_line('place');
-$message = trim(strip_tags($_POST['message'] ?? ''));
-$consent = ($_POST['consent'] ?? '') === 'yes';
+// ---------- 4. ALTCHA proof-of-work ----------
+$altchaField = $_POST['altcha'] ?? '';
+$decoded = is_string($altchaField) ? json_decode((string) base64_decode($altchaField, true), true) : null;
 
-$interests = array_map(
-    fn($v) => trim(strip_tags((string) $v)),
-    (array) ($_POST['interest'] ?? [])
-);
-
-if ($name === '' || $message === '' || !$consent || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    respond(false, 'validation');
+if (!is_array($decoded) || !isset($decoded['challenge']['signature'])) {
+    Http::json(['ok' => false, 'error' => 'captcha'], 400);
 }
 
-// Simple length limits against abuse
-if (mb_strlen($message) > 5000 || mb_strlen($name) > 200) {
-    respond(false, 'too_long');
+try {
+    $result = altcha($config)->verifySolution(new VerifySolutionOptions(
+        algorithm: altcha_algorithm(),
+        payload: $decoded,
+    ));
+} catch (\Throwable $e) {
+    Http::json(['ok' => false, 'error' => 'captcha'], 400);
 }
 
-// ---------- Build mail ----------
-$body = "Neue Anfrage über die Website\n"
-      . "================================\n\n"
-      . "Name:          $name\n"
-      . "Organisation:  $org\n"
-      . "E-Mail:        $email\n"
-      . "Telefon:       $phone\n\n"
-      . "Veranstaltung: $event\n"
-      . "Datum:         $date\n"
-      . "Ort:           $place\n"
-      . "Interesse an:  " . implode(', ', $interests) . "\n\n"
-      . "Nachricht:\n$message\n\n"
-      . "--\nDatenschutz-Einwilligung erteilt am " . date('d.m.Y H:i') . "\n";
+if (!$result->verified) {
+    Http::json(['ok' => false, 'error' => $result->expired ? 'captcha_expired' : 'captcha'], 400);
+}
 
-$headers = [
-    'From: Bungee Action Website <' . MAIL_FROM . '>',
-    'Reply-To: ' . $email,          // "Reply" in the mail client answers the customer directly
-    'Content-Type: text/plain; charset=UTF-8',
-    'X-Mailer: PHP/' . phpversion(),
+// Signature is valid from here on, so the parameters below can be trusted
+$params = $decoded['challenge']['parameters'];
+$guard = new ReplayGuard(STORAGE_DIR . '/altcha-used');
+if (!$guard->useOnce($decoded['challenge']['signature'], (int) ($params['expiresAt'] ?? time() + 3600))) {
+    Http::json(['ok' => false, 'error' => 'captcha'], 400);
+}
+
+// ---------- 5. Minimum fill time ----------
+$issuedAt = (int) ($params['data']['iat'] ?? 0);
+if ($issuedAt === 0 || time() - $issuedAt < (int) $p['min_fill_seconds']) {
+    Http::json(['ok' => false, 'error' => 'too_fast'], 400);
+}
+
+// ---------- 6. Read & validate input ----------
+/** One line of text: no tags, no line breaks, limited length. */
+$line = static function (string $key, int $max = 200): string {
+    $value = trim(strip_tags((string) ($_POST[$key] ?? '')));
+    $value = preg_replace('/[\x00-\x1F\x7F]+/u', ' ', $value) ?? '';
+    return mb_substr($value, 0, $max);
+};
+
+$data = [
+    'name'         => $line('name'),
+    'organisation' => $line('organisation'),
+    'email'        => $line('email', 254),
+    'phone'        => $line('phone', 50),
+    'event'        => $line('event'),
+    'date'         => $line('date', 100),
+    'place'        => $line('place'),
+    'lang'         => in_array($_POST['lang'] ?? '', ['de', 'en', 'fr', 'nl'], true) ? $_POST['lang'] : 'de',
+    'message'      => trim(strip_tags(str_replace("\r\n", "\n", (string) ($_POST['message'] ?? '')))),
 ];
 
-$subject = '=?UTF-8?B?' . base64_encode(MAIL_SUBJECT . ($org ? " – $org" : '')) . '?=';
+$allowedInterests = ['Bungee-Trampolin', 'Hüpfburgen', 'Piratenschiff XXL', 'Kletterberg', 'Sonstiges'];
+$data['interests'] = implode(', ', array_intersect($allowedInterests, (array) ($_POST['interest'] ?? [])));
 
-$sent = mail(MAIL_TO, $subject, $body, implode("\r\n", $headers), '-f' . MAIL_FROM);
+$consent = ($_POST['consent'] ?? '') === 'yes';
 
-respond($sent, $sent ? '' : 'mail');
+if (
+    $data['name'] === ''
+    || $data['message'] === ''
+    || !$consent
+    || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)
+    || ($data['phone'] !== '' && !preg_match('/^[0-9 +()\/.-]{5,50}$/', $data['phone']))
+) {
+    Http::json(['ok' => false, 'error' => 'validation'], 422);
+}
+
+if (mb_strlen($data['message']) > 5000) {
+    Http::json(['ok' => false, 'error' => 'too_long'], 422);
+}
+
+// Typical spam: many links, or links in the name field
+$linkPattern = '~(https?://|www\.)~i';
+if (
+    preg_match_all($linkPattern, $data['message']) > (int) $p['max_links']
+    || preg_match($linkPattern, $data['name'] . $data['organisation'])
+) {
+    Http::json(['ok' => false, 'error' => 'spam'], 422);
+}
+
+// ---------- Send ----------
+$sent = (new ContactMailer($config))->send($data);
+
+Http::json(['ok' => $sent, 'error' => $sent ? '' : 'mail'], $sent ? 200 : 502);

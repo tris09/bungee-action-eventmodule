@@ -6,14 +6,8 @@
   <title>Impressum | Bungee Action Eventmodule</title>
   <meta name="robots" content="noindex, follow">
   <meta name="color-scheme" content="light dark">
-  <script>
-    (function () {
-      try {
-        var t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', t);
-      } catch (e) {}
-    })();
-  </script>
+  <!-- Apply saved theme before the page paints (no white flash in dark mode) -->
+  <script src="js/theme-init.js"></script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/legal.css">

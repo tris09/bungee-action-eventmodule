@@ -1,0 +1,103 @@
+# =====================================================================
+#  bungee-action-eventmodule.de – Apache rules (shared hosting, XAMPP)
+#  1. Bot & attack blocking   2. Security headers   3. Caching
+#  Domain/HTTPS rules are prepared at the bottom and still commented out.
+# =====================================================================
+
+Options -Indexes
+ServerSignature Off
+DirectoryIndex index.html
+ErrorDocument 403 "403 Forbidden"
+
+# ---------------------------------------------------------------------
+# 1. Block bots and attack probes BEFORE any page is delivered
+# ---------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # 1a. No user agent at all = script, never a real browser
+  RewriteCond %{HTTP_USER_AGENT} ^-?$
+  RewriteRule ^ - [F,L]
+
+  # 1b. Programming libraries & download tools (scrapers, spam scripts)
+  RewriteCond %{HTTP_USER_AGENT} (curl|wget|python-requests|python-urllib|python-httpx|aiohttp|httpx|go-http-client|java/|okhttp|libwww-perl|lwp-|scrapy|httrack|apache-httpclient|node-fetch|axios/|undici|guzzlehttp|headlesschrome|phantomjs|nikto|sqlmap|masscan|zgrab|nmap) [NC]
+  RewriteRule ^ - [F,L]
+
+  # 1c. SEO tools & aggressive crawlers (no benefit, only load)
+  RewriteCond %{HTTP_USER_AGENT} (ahrefsbot|semrushbot|mj12bot|dotbot|blexbot|dataforseobot|petalbot|serpstatbot|seekportbot|barkrowler|megaindex|bytespider|zoominfobot|linkpadbot|netestate) [NC]
+  RewriteRule ^ - [F,L]
+
+  # 1d. AI training crawlers (copy content into AI models)
+  #     Search engines (Google, Bing, DuckDuckGo, Apple), link previews
+  #     (WhatsApp, LinkedIn, Facebook) and AI search assistants stay allowed,
+  #     so customers can still find and share the page.
+  RewriteCond %{HTTP_USER_AGENT} (gptbot|ccbot|claudebot|anthropic-ai|claude-web|meta-externalagent|diffbot|cohere-ai|cohere-training|imagesiftbot|omgilibot|omgili|timpibot|youbot|ai2bot|img2dataset|amazonbot|applebot-extended) [NC]
+  RewriteRule ^ - [F,L]
+
+  # 1e. Only the methods a browser needs
+  RewriteCond %{REQUEST_METHOD} !^(GET|HEAD|POST)$
+  RewriteRule ^ - [F,L]
+
+  # 1f. POST is only allowed for the contact form
+  RewriteCond %{REQUEST_METHOD} =POST
+  RewriteCond %{REQUEST_URI} !/kontakt\.php$
+  RewriteRule ^ - [F,L]
+
+  # 1g. Typical attack probes (WordPress, admin tools, secrets)
+  RewriteRule ^(wp-admin|wp-login\.php|wp-content|wp-includes|xmlrpc\.php|phpmyadmin|pma|adminer|cgi-bin|vendor|server|config)(/|\.php|$) - [F,NC,L]
+  RewriteRule (^|/)\.(env|git|svn|ht) - [F,NC,L]
+</IfModule>
+
+# Never deliver hidden files, docs, logs or dev files
+<FilesMatch "(^\.|\.(md|log|lock|ini|sh|bak|old|sql|dist|mjs|ts)$|^composer\.)">
+  Require all denied
+</FilesMatch>
+
+# ---------------------------------------------------------------------
+# 2. Security headers
+# ---------------------------------------------------------------------
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
+  # Only our own files may run. Fonts, images and scripts are all self-hosted.
+  # 'unsafe-inline' for styles only (one style attribute + the ALTCHA widget);
+  # blob: workers = ALTCHA computes its proof-of-work in background threads.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'"
+  Header unset X-Powered-By
+  Header always unset X-Powered-By
+</IfModule>
+
+# ---------------------------------------------------------------------
+# 3. Compression & caching
+# ---------------------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml text/plain
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 hour"
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType text/javascript "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType image/avif "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# ---------------------------------------------------------------------
+# Later, once domain + SSL certificate are live: remove the "#" below
+# ---------------------------------------------------------------------
+# <IfModule mod_rewrite.c>
+#   RewriteCond %{HTTPS} !=on
+#   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+# </IfModule>
+# <IfModule mod_headers.c>
+#   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+# </IfModule>
