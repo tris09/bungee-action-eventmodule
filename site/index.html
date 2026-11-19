@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>4er-Bungee-Trampolin für Stadtfeste &amp; Events | Bungee Action Eventmodule</title>
+  <meta name="description" content="Professionell betreutes 4er-Bungee-Trampolin für Stadtfeste, Firmen- und Familienevents. TÜV-geprüft, 2 Betreuer, Anlieferung, Auf- und Abbau inklusive. Dazu Hüpfburgen, Piratenschiff XXL und Kletterberg.">
+  <meta name="theme-color" content="#1f1f1f">
+  <link rel="canonical" href="https://www.bungee-action-eventmodule.de/">
+
+  <!-- Link previews (WhatsApp, LinkedIn, Mail) -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:title" content="4er-Bungee-Trampolin für Ihre Veranstaltung | Bungee Action">
+  <meta property="og:description" content="Hohe Sprünge. Starker Auftritt. Professionell betreut.">
+  <meta property="og:image" content="https://www.bungee-action-eventmodule.de/img/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <!-- Self-hosted fonts (no request to Google = GDPR friendly) -->
+  <link rel="preload" href="fonts/staatliches-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/montserrat-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Hero image is above the fold: let the browser start loading it right away -->
+  <link rel="preload" as="image" type="image/avif"
+        imagesrcset="img/trampolin-stadion-400.avif 400w, img/trampolin-stadion-800.avif 800w, img/trampolin-stadion-1200.avif 1200w, img/trampolin-stadion-1600.avif 1600w"
+        imagesizes="(min-width: 960px) 540px, calc(100vw - 40px)">
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Set early so scroll animations don't flicker -->
+  <script>document.documentElement.classList.add('js');</script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <!-- Reusable SVG shapes (paint splatter), referenced via <use> -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="splat" viewBox="0 0 230 170">
+      <circle cx="120" cy="80" r="58"/><circle cx="58" cy="52" r="16"/><circle cx="186" cy="44" r="11"/>
+      <circle cx="196" cy="118" r="18"/><circle cx="44" cy="124" r="8"/><circle cx="210" cy="80" r="5"/>
+      <circle cx="30" cy="84" r="5"/><circle cx="150" cy="156" r="6"/>
+      <rect x="128" y="120" width="7" height="44" rx="3.5"/><rect x="96" y="124" width="5" height="30" rx="2.5"/>
+    </symbol>
+    <symbol id="icon-wa" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.6 4c1.7.7 2.3.8 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/>
+    </symbol>
+  </svg>
+
+  <!-- ================= HEADER ================= -->
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a class="brand" href="#top">
+        <img src="img/logo-outline.webp" width="512" height="171" alt="Bungee Action – zur Startseite">
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="sr-only">Menü</span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="Hauptnavigation">
+        <ul>
+          <li><a href="#trampolin">Trampolin</a></li>
+          <li><a href="#qualitaet">Qualität</a></li>
+          <li><a href="#zusammenarbeit">Zusammenarbeit</a></li>
+          <li><a href="#technik">Technik</a></li>
+          <li><a href="#module">Module</a></li>
+          <li><a class="btn btn-primary btn-sm" href="#kontakt">Jetzt anfragen</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ================= HERO ================= -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <svg class="splat splat-hero" aria-hidden="true"><use href="#splat"/></svg>
+          <p class="kicker">Eventmodule für Stadtfeste &amp; Firmen</p>
+          <h1 id="hero-title">4er-Bungee-<br>Trampolin</h1>
+          <p class="lead">Hohe Sprünge. Starker Auftritt. Professionell betreut – TÜV-geprüft und immer mit zwei Mitarbeitern vor Ort.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="#kontakt">Verfügbarkeit anfragen</a>
+            <a class="btn btn-outline" href="tel:+491704904460">0170 4904460</a>
+          </div>
+        </div>
+
+        <div class="hero-media">
+          <picture>
+            <source type="image/avif"
+                    srcset="img/trampolin-stadion-400.avif 400w, img/trampolin-stadion-800.avif 800w, img/trampolin-stadion-1200.avif 1200w, img/trampolin-stadion-1600.avif 1600w"
+                    sizes="(min-width: 960px) 540px, calc(100vw - 40px)">
+            <img class="torn-photo"
+                 src="img/trampolin-stadion-800.webp"
+                 srcset="img/trampolin-stadion-400.webp 400w, img/trampolin-stadion-800.webp 800w, img/trampolin-stadion-1200.webp 1200w, img/trampolin-stadion-1600.webp 1600w"
+                 sizes="(min-width: 960px) 540px, calc(100vw - 40px)"
+                 width="1600" height="1200"
+                 fetchpriority="high" decoding="async"
+                 alt="Kinder springen gleichzeitig auf dem 4er-Bungee-Trampolin vor einem Stadion">
+          </picture>
+          <span class="stamp" aria-hidden="true">TÜV<br>geprüft</span>
+          <picture class="hero-team">
+            <source type="image/avif" srcset="img/team-betreuer-400.avif 400w" sizes="140px">
+            <img src="img/team-betreuer-400.webp" width="400" height="533" loading="lazy" decoding="async"
+                 alt="Betreuer von Bungee Action mit einem Kind am Trampolin">
+          </picture>
+        </div>
+      </div>
+
+      <div class="container">
+        <ul class="stats" aria-label="Das Trampolin in Zahlen">
+          <li class="stat reveal"><strong>4</strong><span>Springer gleichzeitig</span></li>
+          <li class="stat reveal"><strong>35–40</strong><span>Teilnehmer pro Stunde</span></li>
+          <li class="stat reveal"><strong>2</strong><span>Betreuer inklusive</span></li>
+          <li class="stat reveal"><strong>7 m</strong><span>Sprunghöhe</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= TRAMPOLIN ================= -->
+    <section class="section" id="trampolin" aria-labelledby="trampolin-title">
+      <div class="container split">
+        <div class="photo-card reveal">
+          <picture>
+            <source type="image/avif" srcset="img/sprung-strand-400.avif 400w, img/sprung-strand-800.avif 800w"
+                    sizes="(min-width: 960px) 420px, calc(100vw - 40px)">
+            <img class="torn-photo"
+                 src="img/sprung-strand-800.webp"
+                 srcset="img/sprung-strand-400.webp 400w, img/sprung-strand-800.webp 800w"
+                 sizes="(min-width: 960px) 420px, calc(100vw - 40px)"
+                 width="800" height="1067" loading="lazy" decoding="async"
+                 alt="Junge springt am Bungee-Trampolin hoch in den blauen Himmel">
+          </picture>
+        </div>
+
+        <div class="reveal">
+          <p class="kicker">Die Attraktion</p>
+          <h2 id="trampolin-title">Springen, bis die Kinder strahlen</h2>
+          <p>Bei unserem Bungee-Trampolin springen bis zu vier Kinder gleichzeitig – gesichert durch ein Gurt- und Seilsystem, mit Sprüngen bis zu 7 Metern Höhe. Die Sprunghöhe bestimmt jedes Kind selbst.</p>
+          <p>Für die Kinder ist es das Highlight, für Ihre Besucher ein echter Blickfang. Geeignet für Kinder und Jugendliche von etwa 3 bis 15 Jahren.</p>
+
+          <h3 class="h-small">Typische Einsätze</h3>
+          <ul class="chips">
+            <li>Stadtfeste</li>
+            <li>Firmenfeiern</li>
+            <li>Ferienprogramme</li>
+            <li>Schulfeste</li>
+            <li>Gewerbefeste</li>
+            <li>Familienevents</li>
+          </ul>
+          <p class="muted">Wir arbeiten unter anderem für Veranstalter, Jugendämter und soziale Einrichtungen.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= QUALITÄT (dark) ================= -->
+    <section class="section section-dark torn-top" id="qualitaet" aria-labelledby="qualitaet-title">
+      <div class="container split split-reverse">
+        <div class="reveal">
+          <p class="kicker">Unser Anspruch</p>
+          <h2 id="qualitaet-title">Qualität, die man vor Ort sieht</h2>
+          <p class="section-lead">Nicht nur die Attraktion, sondern die Betreuung und Präsentation machen den Unterschied.</p>
+
+          <ol class="steps">
+            <li>
+              <h3>Gepflegte Anlage</h3>
+              <p>Sauberer Aufbau, ordentliches Erscheinungsbild und eine ansprechende Präsentation. Alle Anlagen sind TÜV-geprüft.</p>
+            </li>
+            <li>
+              <h3>Aufmerksames Team</h3>
+              <p>Freundliche, eingewiesene Kräfte mit Erfahrung im Umgang mit Kindern und Familien – immer zwei Mitarbeiter pro Anlage.</p>
+            </li>
+            <li>
+              <h3>Hohe Sprungqualität</h3>
+              <p>Individuelle Einweisung und eine gut abgestimmte, aufmerksame Sprungbetreuung.</p>
+            </li>
+          </ol>
+        </div>
+
+        <div class="tilt-photo reveal">
+          <picture>
+            <source type="image/avif" srcset="img/team-betreuer-400.avif 400w, img/team-betreuer-800.avif 800w"
+                    sizes="(min-width: 960px) 380px, 70vw">
+            <img src="img/team-betreuer-800.webp"
+                 srcset="img/team-betreuer-400.webp 400w, img/team-betreuer-800.webp 800w"
+                 sizes="(min-width: 960px) 380px, 70vw"
+                 width="800" height="1067" loading="lazy" decoding="async"
+                 alt="Betreuer von Bungee Action hält ein Kind nach dem Sprung hoch">
+          </picture>
+          <span class="tag">2 Betreuer pro Anlage</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ZUSAMMENARBEIT ================= -->
+    <section class="section torn-top torn-light" id="zusammenarbeit" aria-labelledby="zusammenarbeit-title">
+      <div class="container">
+        <div class="section-head">
+          <svg class="splat splat-section" aria-hidden="true"><use href="#splat"/></svg>
+          <p class="kicker">Ganz nach Ihrem Budget</p>
+          <h2 id="zusammenarbeit-title">So kann die Zusammenarbeit aussehen</h2>
+        </div>
+
+        <ol class="cards">
+          <li class="card reveal">
+            <span class="card-num" aria-hidden="true">01</span>
+            <h3>Festpreis / Fullservice</h3>
+            <p>Wir übernehmen Anlieferung, Auf- und Abbau sowie die Betreuung.</p>
+          </li>
+          <li class="card reveal">
+            <span class="card-num" aria-hidden="true">02</span>
+            <h3>Mit lokalem Sponsor</h3>
+            <p>Ein Partner finanziert das Angebot und kann passend eingebunden werden.</p>
+          </li>
+          <li class="card reveal">
+            <span class="card-num" aria-hidden="true">03</span>
+            <h3>Eigenwirtschaftlich</h3>
+            <p>Alternativ prüfen wir passende Stand- und Betriebskonditionen.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================= TECHNIK (blue) ================= -->
+    <section class="section section-blue torn-top" id="technik" aria-labelledby="technik-title">
+      <div class="container split">
+        <div class="reveal">
+          <p class="kicker kicker-ink">Für Ihre Planung</p>
+          <h2 id="technik-title">Technische Eckdaten</h2>
+          <dl class="specs">
+            <div><dt>Platzbedarf</dt><dd>ca. 10 × 10 m</dd></div>
+            <div><dt>Freie Höhe</dt><dd>mind. 8 m</dd></div>
+            <div><dt>Untergrund</dt><dd>eben, z. B. Wiese / Pflaster</dd></div>
+            <div><dt>Strom</dt><dd>230 V / 16 A</dd></div>
+            <div><dt>Auf- / Abbau</dt><dd>je ca. 2 Stunden</dd></div>
+            <div><dt>Betreuung</dt><dd>2 Mann Personal</dd></div>
+          </dl>
+        </div>
+        <div class="tilt-photo tilt-photo-r reveal">
+          <picture>
+            <source type="image/avif" srcset="img/stadtfest-uebersicht-400.avif 400w, img/stadtfest-uebersicht-800.avif 800w"
+                    sizes="(min-width: 960px) 460px, 80vw">
+            <img src="img/stadtfest-uebersicht-800.webp"
+                 srcset="img/stadtfest-uebersicht-400.webp 400w, img/stadtfest-uebersicht-800.webp 800w"
+                 sizes="(min-width: 960px) 460px, 80vw"
+                 width="800" height="600" loading="lazy" decoding="async"
+                 alt="Stadtfest von oben mit Zelten, Besuchern und Bungee-Trampolin">
+          </picture>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MODULE ================= -->
+    <section class="section torn-top torn-light" id="module" aria-labelledby="module-title">
+      <div class="container">
+        <div class="section-head">
+          <p class="kicker">Spaß und Action</p>
+          <h2 id="module-title">Noch mehr Attraktionen</h2>
+          <p class="section-lead">Im Mittelpunkt steht unser Bungee-Trampolin. Auf Wunsch ergänzen wir Ihr Event um weitere Hüpf- und Kletterattraktionen.</p>
+        </div>
+
+        <ul class="modules">
+          <li class="module module-wide reveal">
+            <picture>
+              <source type="image/avif" srcset="img/huepfburg-400.avif 400w, img/huepfburg-800.avif 800w, img/huepfburg-1200.avif 1200w"
+                      sizes="(min-width: 960px) 560px, calc(100vw - 56px)">
+              <img src="img/huepfburg-800.webp"
+                   srcset="img/huepfburg-400.webp 400w, img/huepfburg-800.webp 800w, img/huepfburg-1200.webp 1200w"
+                   sizes="(min-width: 960px) 560px, calc(100vw - 56px)"
+                   width="1600" height="2400" loading="lazy" decoding="async"
+                   alt="Kinder klettern auf einer großen, bunten Hüpfburg">
+            </picture>
+            <div class="module-body">
+              <h3>Hüpfburgen</h3>
+              <p>Verschiedene Größen &amp; Themen</p>
+            </div>
+          </li>
+          <li class="module reveal">
+            <!-- TODO: replace low-res placeholder with a real photo -->
+            <picture>
+              <source type="image/avif" srcset="img/piratenschiff-xxl-168.avif">
+              <img src="img/piratenschiff-xxl-168.webp" width="168" height="125" loading="lazy" decoding="async"
+                   alt="Große Hüpfburg in Form eines Piratenschiffs">
+            </picture>
+            <div class="module-body">
+              <h3>Piratenschiff XXL</h3>
+              <p>Große Themen-Hüpfburg</p>
+            </div>
+          </li>
+          <li class="module reveal">
+            <!-- TODO: replace low-res placeholder with a real photo -->
+            <picture>
+              <source type="image/avif" srcset="img/kletterberg-168.avif">
+              <img src="img/kletterberg-168.webp" width="168" height="125" loading="lazy" decoding="async"
+                   alt="Kind klettert an einem aufblasbaren Kletterberg">
+            </picture>
+            <div class="module-body">
+              <h3>Kletterberg</h3>
+              <p>Aktive Kletterattraktion</p>
+            </div>
+          </li>
+        </ul>
+        <p class="muted">Außerdem auf Anfrage: Wasserlaufbälle und weitere kleine Spaßgeräte.</p>
+      </div>
+    </section>
+
+    <!-- ================= KONTAKT ================= -->
+    <section class="section section-dark torn-top" id="kontakt" aria-labelledby="kontakt-title">
+      <div class="container contact-grid">
+        <div class="contact-intro reveal">
+          <p class="kicker">Saison 2027 jetzt planen</p>
+          <h2 id="kontakt-title">Wir freuen uns, dabei zu sein!</h2>
+          <p>Verfügbarkeit und Konditionen unverbindlich anfragen – wir melden uns zeitnah persönlich bei Ihnen.</p>
+
+          <div class="contact-card">
+            <p class="contact-name">Tim Schnitzler <span>Inhaber · Bungee Action</span></p>
+            <a class="contact-line" href="tel:+491704904460">0170 4904460</a>
+            <a class="contact-line contact-mail" href="mailto:info@bungee-action.de">info@bungee-action.de</a>
+            <a class="btn btn-whatsapp js-wa" href="https://wa.me/491704904460" target="_blank" rel="noopener">
+              <svg width="22" height="22" aria-hidden="true"><use href="#icon-wa"/></svg>
+              Per WhatsApp anfragen
+            </a>
+          </div>
+        </div>
+
+        <form class="contact-form reveal" id="contact-form" action="kontakt.php" method="post" novalidate>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-name">Name *</label>
+              <input id="f-name" name="name" type="text" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="f-org">Veranstalter / Organisation</label>
+              <input id="f-org" name="organisation" type="text" autocomplete="organization">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-email">E-Mail *</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="field">
+              <label for="f-phone">Telefon</label>
+              <input id="f-phone" name="phone" type="tel" autocomplete="tel">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-event">Veranstaltung</label>
+              <input id="f-event" name="event" type="text" placeholder="z. B. Stadtfest 2027">
+            </div>
+            <div class="field">
+              <label for="f-date">Datum / Zeitraum</label>
+              <input id="f-date" name="date" type="text" placeholder="z. B. 12.–14.06.2027">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="f-place">Ort</label>
+            <input id="f-place" name="place" type="text" autocomplete="address-level2">
+          </div>
+
+          <fieldset class="field">
+            <legend>Interesse an</legend>
+            <div class="checks">
+              <label><input type="checkbox" name="interest[]" value="Bungee-Trampolin" checked> Bungee-Trampolin</label>
+              <label><input type="checkbox" name="interest[]" value="Hüpfburgen"> Hüpfburgen</label>
+              <label><input type="checkbox" name="interest[]" value="Piratenschiff XXL"> Piratenschiff XXL</label>
+              <label><input type="checkbox" name="interest[]" value="Kletterberg"> Kletterberg</label>
+              <label><input type="checkbox" name="interest[]" value="Sonstiges"> Sonstiges</label>
+            </div>
+          </fieldset>
+
+          <div class="field">
+            <label for="f-message">Nachricht *</label>
+            <textarea id="f-message" name="message" rows="4" required></textarea>
+          </div>
+
+          <!-- Honeypot: invisible for humans, bots tend to fill it -->
+          <div class="hp" aria-hidden="true">
+            <label for="f-website">Website</label>
+            <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
+
+          <label class="consent">
+            <input type="checkbox" name="consent" value="yes" required>
+            <span>Ich bin einverstanden, dass meine Angaben zur Bearbeitung der Anfrage verwendet werden. Mehr in der <a href="datenschutz.html">Datenschutzerklärung</a>. *</span>
+          </label>
+
+          <button class="btn btn-primary btn-block" type="submit">Jetzt unverbindlich anfragen</button>
+          <p class="form-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <img src="img/logo.webp" width="500" height="159" alt="Bungee Action" loading="lazy" decoding="async">
+      <p>Bungee Action · Inhaber Tim Schnitzler<br>Professionell betreute Eventmodule</p>
+      <nav aria-label="Rechtliches">
+        <a href="impressum.html">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
+      </nav>
+      <p class="copy">© <span id="year">2026</span> Bungee Action</p>
+    </div>
+  </footer>
+
+  <!-- Floating WhatsApp button -->
+  <a class="wa-float js-wa" href="https://wa.me/491704904460" target="_blank" rel="noopener" aria-label="Per WhatsApp anfragen">
+    <svg width="30" height="30" aria-hidden="true"><use href="#icon-wa"/></svg>
+  </a>
+
+  <!-- Sticky CTA on phones -->
+  <a class="mobile-cta btn btn-primary" href="#kontakt">Verfügbarkeit anfragen</a>
+</body>
+</html>

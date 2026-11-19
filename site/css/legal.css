@@ -1,0 +1,8 @@
+/* Simple text layout for Impressum / Datenschutz */
+.legal { max-width: 760px; padding-block: 3rem 4rem; }
+.legal h1 { font-size: clamp(2.6rem, 10vw, 4rem); }
+.legal h2 { font-size: 1.6rem; margin-top: 2rem; }
+.legal ul { list-style: disc; padding-left: 1.25rem; margin-bottom: 1em; }
+.legal .placeholder { background: #fff3cd; padding: 0 .3em; border-radius: 4px; }
+.legal-footer { padding-bottom: 2.5rem; }
+.legal-footer .footer-inner { grid-template-columns: 1fr auto; }
