@@ -1,1 +1,14 @@
 node_modules/
+# Dependencies
+node_modules/
+
+# OS junk
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Logs
+npm-debug.log*
+
+# Local secrets (for later, e.g. SMTP credentials)
+.env

@@ -9,7 +9,7 @@
     "images:clean": "node tools/build-images.mjs --clean"
   },
   "devDependencies": {
-    "sharp": "^0.34.0"
+    "sharp": "^0.35.5"
   },
   "engines": {
     "node": ">=20"
