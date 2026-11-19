@@ -4,18 +4,116 @@
    ========================================================= */
 
 const WHATSAPP_NUMBER = '491704904460';
-const WHATSAPP_TEXT =
-  'Hallo Herr Schnitzler, ich interessiere mich für das Bungee-Trampolin für unsere Veranstaltung. ' +
-  'Datum: … / Ort: … – Ist der Termin noch frei?';
+const root = document.documentElement;
+
+let currentLang = 'de';
+const msg = (key) => (window.I18N_MESSAGES?.[currentLang] || window.I18N_MESSAGES?.de || {})[key] || '';
 
 document.addEventListener('DOMContentLoaded', () => {
+  initLanguage();
+  initTheme();
   initNav();
+  initScrollToTop();
   initReveal();
   initMobileCta();
-  initWhatsApp();
   initContactForm();
   setYear();
 });
+
+/* ---------- Small helper: localStorage can throw (private mode, blocked storage) ---------- */
+const store = {
+  get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
+  set: (k, v) => { try { localStorage.setItem(k, v); } catch { /* ignore */ } },
+};
+
+/* ---------- Language switch (DE / EN) ---------- */
+function initLanguage() {
+  const textEls = document.querySelectorAll('[data-i18n]');
+  const attrEls = document.querySelectorAll('[data-i18n-attr]');
+
+  // Remember the German originals from the HTML, so we can switch back
+  textEls.forEach((el) => { el.dataset.i18nDe = el.innerHTML; });
+  attrEls.forEach((el) => {
+    parseAttrList(el.dataset.i18nAttr).forEach(([attr]) => {
+      el.dataset[`i18nDe_${attr.replace(/-/g, '_')}`] = el.getAttribute(attr) ?? '';
+    });
+  });
+
+  const apply = (lang) => {
+    currentLang = lang === 'en' ? 'en' : 'de';
+    const dict = window.I18N?.[currentLang] || {};
+
+    textEls.forEach((el) => {
+      const key = el.dataset.i18n;
+      el.innerHTML = currentLang === 'de' ? el.dataset.i18nDe : (dict[key] ?? el.dataset.i18nDe);
+    });
+    attrEls.forEach((el) => {
+      parseAttrList(el.dataset.i18nAttr).forEach(([attr, key]) => {
+        const original = el.dataset[`i18nDe_${attr.replace(/-/g, '_')}`];
+        el.setAttribute(attr, currentLang === 'de' ? original : (dict[key] ?? original));
+      });
+    });
+
+    root.lang = currentLang;
+    document.querySelectorAll('.lang-switch [data-lang]').forEach((btn) => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.lang === currentLang));
+    });
+    updateWhatsAppLinks(); // links inside translated texts were just re-created
+    updateThemeLabel();
+  };
+
+  document.querySelectorAll('.lang-switch [data-lang]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      store.set('lang', btn.dataset.lang);
+      apply(btn.dataset.lang);
+    });
+  });
+
+  // Saved choice > browser language > German
+  const saved = store.get('lang');
+  const browserLang = (navigator.language || 'de').toLowerCase().startsWith('de') ? 'de' : 'en';
+  apply(saved || browserLang);
+}
+
+function parseAttrList(value = '') {
+  return value.split(';').filter(Boolean).map((pair) => pair.split(':').map((s) => s.trim()));
+}
+
+/* ---------- Light / dark mode ---------- */
+function initTheme() {
+  const toggle = document.querySelector('.theme-toggle');
+  if (!toggle) return;
+
+  toggle.addEventListener('click', () => {
+    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    store.set('theme', next);
+    updateThemeLabel();
+  });
+
+  // Follow the OS setting live, as long as the user has not chosen manually
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (store.get('theme')) return;
+    root.dataset.theme = e.matches ? 'dark' : 'light';
+    updateThemeLabel();
+  });
+
+  updateThemeLabel();
+}
+
+function updateThemeLabel() {
+  const toggle = document.querySelector('.theme-toggle');
+  if (!toggle) return;
+  const isDark = root.dataset.theme === 'dark';
+  toggle.setAttribute('aria-label', isDark ? msg('themeToLight') : msg('themeToDark'));
+  toggle.setAttribute('aria-pressed', String(isDark));
+}
+
+/* ---------- WhatsApp links with a prefilled message ---------- */
+function updateWhatsAppLinks() {
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg('waText'))}`;
+  document.querySelectorAll('.js-wa').forEach((link) => { link.href = url; });
+}
 
 /* ---------- Mobile navigation ---------- */
 function initNav() {
@@ -33,6 +131,18 @@ function initNav() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
 }
 
+/* ---------- Logo: smooth scroll back to the top ---------- */
+function initScrollToTop() {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.js-to-top').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+      history.replaceState(null, '', location.pathname); // remove "#..." from the URL
+    });
+  });
+}
+
 /* ---------- Fade/slide elements in when they scroll into view ---------- */
 function initReveal() {
   const items = document.querySelectorAll('.reveal');
@@ -44,8 +154,11 @@ function initReveal() {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
-      entry.target.classList.add('is-visible');
-      observer.unobserve(entry.target); // animate only once
+      const el = entry.target;
+      el.classList.add('is-visible');
+      observer.unobserve(el); // animate only once
+      // Remove the stagger delay afterwards, otherwise hover effects would start late
+      setTimeout(() => { el.style.transitionDelay = ''; }, 1200);
     });
   }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
 
@@ -71,12 +184,6 @@ function initMobileCta() {
   new IntersectionObserver(([e]) => { visible.contact = e.isIntersecting; update(); }, { threshold: 0.05 }).observe(contact);
 }
 
-/* ---------- WhatsApp links with a prefilled message ---------- */
-function initWhatsApp() {
-  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_TEXT)}`;
-  document.querySelectorAll('.js-wa').forEach((link) => { link.href = url; });
-}
-
 /* ---------- Contact form: validation + async submit ---------- */
 function initContactForm() {
   const form = document.getElementById('contact-form');
@@ -85,8 +192,8 @@ function initContactForm() {
   const status = form.querySelector('.form-status');
   const submitBtn = form.querySelector('button[type="submit"]');
 
-  const setStatus = (msg, type = '') => {
-    status.textContent = msg;
+  const setStatus = (text, type = '') => {
+    status.textContent = text;
     status.className = 'form-status' + (type ? ` is-${type}` : '');
   };
 
@@ -108,15 +215,13 @@ function initContactForm() {
     });
 
     if (firstInvalid) {
-      setStatus(firstInvalid.name === 'consent'
-        ? 'Bitte stimmen Sie der Datenverarbeitung zu.'
-        : 'Bitte füllen Sie alle Pflichtfelder (*) korrekt aus.', 'error');
+      setStatus(firstInvalid.name === 'consent' ? msg('formConsent') : msg('formRequired'), 'error');
       firstInvalid.focus();
       return;
     }
 
     submitBtn.disabled = true;
-    setStatus('Anfrage wird gesendet …');
+    setStatus(msg('formSending'));
 
     try {
       const res = await fetch(form.action, {
@@ -128,9 +233,9 @@ function initContactForm() {
       if (!res.ok || !data.ok) throw new Error(data.error || 'send failed');
 
       form.reset();
-      setStatus('Vielen Dank! Ihre Anfrage ist angekommen – wir melden uns zeitnah.', 'success');
+      setStatus(msg('formSuccess'), 'success');
     } catch {
-      setStatus('Die Anfrage konnte nicht gesendet werden. Bitte schreiben Sie direkt an info@bungee-action.de, per WhatsApp oder rufen Sie an: 0170 4904460.', 'error');
+      setStatus(msg('formError'), 'error');
     } finally {
       submitBtn.disabled = false;
     }

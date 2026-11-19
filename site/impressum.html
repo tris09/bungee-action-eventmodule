@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Impressum | Bungee Action Eventmodule</title>
   <meta name="robots" content="noindex, follow">
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/legal.css">
@@ -12,7 +21,7 @@
 <body>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html"><img src="img/logo-outline.webp" width="512" height="171" alt="Bungee Action – zur Startseite"></a>
+      <a class="brand" href="index.html" aria-label="Bungee Action – zur Startseite"><img class="logo-on-light" src="img/logo-dark.webp" width="500" height="159" alt="Bungee Action"><img class="logo-on-dark" src="img/logo.webp" width="500" height="159" alt="Bungee Action"></a>
       <a class="btn btn-outline btn-sm" href="index.html">Zurück zur Startseite</a>
     </div>
   </header>

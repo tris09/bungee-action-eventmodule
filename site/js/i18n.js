@@ -1,0 +1,160 @@
+/* =========================================================
+   Translations
+   German is the default and lives directly in index.html
+   (good for SEO and works without JavaScript). This file only
+   holds the English texts plus messages that JS shows itself.
+
+   How it works:
+   - data-i18n="key"              -> element.innerHTML is replaced
+   - data-i18n-attr="attr:key;…"  -> attributes (alt, placeholder, aria-label, content)
+   ========================================================= */
+
+window.I18N = {
+  en: {
+    'meta.title': '4-person bungee trampoline for town festivals &amp; events | Bungee Action',
+    'meta.description': 'Professionally supervised 4-person bungee trampoline for town festivals, corporate and family events. TÜV-certified, 2 staff, delivery, setup and dismantling included. Plus bouncy castles, XXL pirate ship and climbing mountain.',
+    skip: 'Skip to content',
+
+    'nav.home': 'Bungee Action – back to top',
+    'nav.label': 'Main navigation',
+    'nav.trampoline': 'Trampoline',
+    'nav.quality': 'Quality',
+    'nav.collab': 'Cooperation',
+    'nav.tech': 'Specs',
+    'nav.modules': 'Modules',
+    'nav.cta': 'Enquire now',
+    'nav.menu': 'Menu',
+    'settings.lang': 'Language',
+    'settings.theme': 'Switch between light and dark mode',
+
+    'hero.kicker': 'Event modules for town festivals &amp; companies',
+    'hero.title': '4-Person<br>Bungee Trampoline',
+    'hero.lead': 'High jumps. Strong presence. Professionally supervised – TÜV-certified and always staffed by two team members on site.',
+    'cta.availability': 'Check availability',
+    stamp: 'TÜV<br>certified',
+    'alt.hero': 'Children jumping at the same time on the 4-person bungee trampoline in front of a stadium',
+    'alt.teamSmall': 'Bungee Action staff member with a child at the trampoline',
+
+    'stats.label': 'The trampoline in numbers',
+    'stats.jumpers': 'jumpers at once',
+    'stats.perHour': 'participants per hour',
+    'stats.staff': 'staff included',
+    'stats.height': 'jump height',
+
+    'tramp.kicker': 'The attraction',
+    'tramp.title': 'Jumping until the kids are beaming',
+    'tramp.p1': 'Up to four children jump at the same time on our bungee trampoline – secured by a harness and rope system, with jumps of up to 7 metres. Each child decides how high to go.',
+    'tramp.p2': 'For the kids it is the highlight, for your visitors a real eye-catcher. Suitable for children and teenagers aged roughly 3 to 15.',
+    'tramp.usesTitle': 'Typical events',
+    'use.city': 'Town festivals',
+    'use.corporate': 'Corporate events',
+    'use.holiday': 'Holiday programmes',
+    'use.school': 'School fairs',
+    'use.trade': 'Local business fairs',
+    'use.family': 'Family events',
+    'tramp.clients': 'Our clients include event organisers, youth welfare offices and social institutions.',
+    'alt.beach': 'Boy jumping high into the blue sky on the bungee trampoline',
+
+    'quality.kicker': 'Our standard',
+    'quality.title': 'Quality you can see on site',
+    'quality.lead': 'It is not just the attraction – supervision and presentation make the difference.',
+    'quality.s1t': 'Well-kept equipment',
+    'quality.s1p': 'Clean setup, tidy appearance and an appealing presentation. All equipment is TÜV-certified.',
+    'quality.s2t': 'Attentive team',
+    'quality.s2p': 'Friendly, trained staff experienced with children and families – always two team members per unit.',
+    'quality.s3t': 'High jump quality',
+    'quality.s3p': 'Individual briefing and well-tuned, attentive jump supervision.',
+    'quality.tag': '2 staff per unit',
+    'alt.team': 'Bungee Action staff member lifting a child after a jump',
+
+    'collab.kicker': 'To suit your budget',
+    'collab.title': 'How we can work together',
+    'collab.c1t': 'Fixed price / full service',
+    'collab.c1p': 'We take care of delivery, setup, dismantling and supervision.',
+    'collab.c2t': 'With a local sponsor',
+    'collab.c2p': 'A partner funds the attraction and can be featured accordingly.',
+    'collab.c3t': 'Self-financed',
+    'collab.c3p': 'Alternatively, we review suitable pitch and operating terms.',
+
+    'tech.kicker': 'For your planning',
+    'tech.title': 'Technical specs',
+    'tech.space': 'Space required',
+    'tech.spaceV': 'approx. 10 × 10 m',
+    'tech.height': 'Clear height',
+    'tech.heightV': 'min. 8 m',
+    'tech.ground': 'Surface',
+    'tech.groundV': 'level, e.g. grass / paving',
+    'tech.power': 'Power',
+    'tech.setup': 'Setup / dismantling',
+    'tech.setupV': 'approx. 2 hours each',
+    'tech.staff': 'Supervision',
+    'tech.staffV': '2 staff members',
+    'alt.festival': 'Town festival from above with tents, visitors and the bungee trampoline',
+
+    'modules.kicker': 'Fun and action',
+    'modules.title': 'More attractions',
+    'modules.lead': 'Our bungee trampoline is the centrepiece. On request, we add further bouncing and climbing attractions to your event.',
+    'modules.m1t': 'Bouncy castles',
+    'modules.m1p': 'Various sizes &amp; themes',
+    'modules.m2t': 'XXL pirate ship',
+    'modules.m2p': 'Large themed bouncy castle',
+    'modules.m3t': 'Climbing mountain',
+    'modules.m3p': 'Active climbing attraction',
+    'modules.more': 'Also available on request: water walking balls and other small fun attractions.',
+    'alt.bouncy': 'Children climbing on a large, colourful bouncy castle',
+    'alt.pirate': 'Large bouncy castle shaped like a pirate ship',
+    'alt.climb': 'Child climbing an inflatable climbing mountain',
+
+    'contact.kicker': 'Plan your 2027 season now',
+    'contact.title': 'We would love to be part of it!',
+    'contact.lead': 'Ask about availability and terms without obligation – we will get back to you personally and promptly.',
+    'contact.role': 'Owner · Bungee Action',
+    'contact.wa': 'Enquire via WhatsApp',
+
+    'form.name': 'Name *',
+    'form.org': 'Organiser / organisation',
+    'form.email': 'Email *',
+    'form.phone': 'Phone',
+    'form.event': 'Event',
+    'form.eventPh': 'e.g. town festival 2027',
+    'form.date': 'Date / period',
+    'form.datePh': 'e.g. 12–14 June 2027',
+    'form.place': 'Location',
+    'form.interest': 'Interested in',
+    'form.iTramp': 'Bungee trampoline',
+    'form.iOther': 'Other',
+    'form.message': 'Message *',
+    'form.consent': 'I agree that my details will be used to process my enquiry. More in the <a href="datenschutz.html">privacy policy</a> (German). *',
+    'form.submit': 'Send enquiry',
+    'form.hint': 'Faster via <a class="js-wa" href="https://wa.me/491704904460" target="_blank" rel="noopener">WhatsApp</a> or by phone on <a href="tel:+491704904460">+49 170 4904460</a>.',
+
+    'footer.about': 'Bungee Action · Owner Tim Schnitzler<br>Professionally supervised event modules',
+    'footer.legal': 'Legal',
+    'footer.imprint': 'Legal notice (DE)',
+    'footer.privacy': 'Privacy policy (DE)',
+  },
+};
+
+/* Messages created by JavaScript (form status, WhatsApp text) – both languages */
+window.I18N_MESSAGES = {
+  de: {
+    waText: 'Hallo Herr Schnitzler, ich interessiere mich für das Bungee-Trampolin für unsere Veranstaltung. Datum: … / Ort: … – Ist der Termin noch frei?',
+    formRequired: 'Bitte füllen Sie alle Pflichtfelder (*) korrekt aus.',
+    formConsent: 'Bitte stimmen Sie der Datenverarbeitung zu.',
+    formSending: 'Anfrage wird gesendet …',
+    formSuccess: 'Vielen Dank! Ihre Anfrage ist angekommen – wir melden uns zeitnah.',
+    formError: 'Die Anfrage konnte nicht gesendet werden. Bitte schreiben Sie direkt an info@bungee-action.de, per WhatsApp oder rufen Sie an: 0170 4904460.',
+    themeToDark: 'Dunkelmodus aktivieren',
+    themeToLight: 'Hellmodus aktivieren',
+  },
+  en: {
+    waText: 'Hello Mr Schnitzler, I am interested in the bungee trampoline for our event. Date: … / Location: … – Is the date still available?',
+    formRequired: 'Please fill in all required fields (*) correctly.',
+    formConsent: 'Please agree to the processing of your data.',
+    formSending: 'Sending enquiry …',
+    formSuccess: 'Thank you! Your enquiry has arrived – we will get back to you shortly.',
+    formError: 'Your enquiry could not be sent. Please email info@bungee-action.de, message us on WhatsApp or call +49 170 4904460.',
+    themeToDark: 'Switch to dark mode',
+    themeToLight: 'Switch to light mode',
+  },
+};
